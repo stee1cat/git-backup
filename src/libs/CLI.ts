@@ -4,10 +4,13 @@
 
 import * as path from 'path';
 import * as parseArgs from 'minimist';
+import { ICredentials } from './ICredentials';
 
 export interface ICommandLineArguments {
-    user: string;
+    owner: string;
     output: string;
+    credentials?: ICredentials;
+    service: 'github' | 'bitbucket';
     error: boolean;
 }
 
@@ -27,8 +30,11 @@ export class CLI {
     public getArguments(): ICommandLineArguments {
         let options = {
             string: [
-                'user',
-                'output'
+                'owner',
+                'output',
+                'username',
+                'password',
+                'service'
             ]
         };
 
@@ -39,22 +45,36 @@ export class CLI {
 
     protected prepareArguments(args: IParsedArgs): ICommandLineArguments {
         let result: ICommandLineArguments = {
-            user: '',
+            service: 'github',
+            owner: '',
             output: '',
             error: false
         };
         let executionPath = path.dirname(args._[1]);
 
-        if (!args.user) {
+        if (!args.owner) {
             result.error = true;
         } else  {
-            result.user = args.user;
+            result.owner = args.owner;
+        }
+
+        if (!args.service) {
+            result.error = true;
+        } else  {
+            result.service = args.service.toLowerCase();
         }
 
         if (args.output) {
             result.output = path.resolve(executionPath, args.output);
         } else {
             result.output = executionPath;
+        }
+
+        if (args.username && args.password) {
+            result.credentials = {
+                username: args.username,
+                password: args.password
+            };
         }
 
         return result;

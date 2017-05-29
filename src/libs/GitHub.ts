@@ -4,10 +4,9 @@
 
 import * as request from 'request';
 
-export interface IGitRepo {
-    name: string;
-    url: string;
-}
+import { IService } from './IService';
+import { IRepository } from './IRepository';
+import { ICredentials } from './ICredentials';
 
 let requestOptions: request.CoreOptions = {
     headers: {
@@ -15,18 +14,27 @@ let requestOptions: request.CoreOptions = {
     }
 };
 
-export class GitHub {
+export class GitHub implements IService {
 
-    public static fetchUserRepos(user: string): Promise<IGitRepo[]> {
+    public readonly NAME = 'github';
+
+    protected credentials: ICredentials;
+
+    public setCredentials(credentials: ICredentials): void {
+        this.credentials = credentials;
+    }
+
+    public fetchUserRepos(user: string): Promise<IRepository[]> {
         return new Promise(function (resolve, reject) {
             request.get(`https://api.github.com/users/${user}/repos`, requestOptions, function (error, response) {
                 if (!error && response.statusCode === 200) {
                     try {
                         let repos = JSON.parse(response.body);
-                        let result: IGitRepo[] = repos.map(function (repo) {
+                        let result: IRepository[] = repos.map(function (repo) {
                             return {
                                 name: repo.name,
-                                url: repo.html_url
+                                owner: repo.owner.login,
+                                httpsCloneUrl: repo.clone_url
                             };
                         });
 
