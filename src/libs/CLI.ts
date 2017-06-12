@@ -12,6 +12,7 @@ export interface ICommandLineArguments {
     credentials?: ICredentials;
     service: 'github' | 'bitbucket';
     error: boolean;
+    compress: boolean;
 }
 
 export interface IParsedArgs {
@@ -35,6 +36,9 @@ export class CLI {
                 'username',
                 'password',
                 'service'
+            ],
+            boolean: [
+                'compress'
             ]
         };
 
@@ -48,7 +52,8 @@ export class CLI {
             service: 'github',
             owner: '',
             output: '',
-            error: false
+            error: false,
+            compress: false
         };
         let executionPath = path.dirname(args._[1]);
 
@@ -75,6 +80,10 @@ export class CLI {
                 username: args.username,
                 password: args.password
             };
+        }
+
+        if (args.compress) {
+            result.compress = true;
         }
 
         return result;

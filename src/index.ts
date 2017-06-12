@@ -8,6 +8,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as NodeGit from 'nodegit';
 import * as moment from 'moment';
+import * as archiver from 'archiver';
 
 import { CLI } from './libs/CLI';
 import { GitHub } from './libs/GitHub';
@@ -66,10 +67,43 @@ service.fetchUserRepos(args.owner)
                         fs.mkdirsSync(clonePath);
                     }
 
-                    chain = chain.then(() => NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions))
-                        .then(function () {
-                            console.log(`Done: ${repo.name}`);
+                    chain = chain.then(function () {
+                            process.stdout.write(`Clone: ${repo.name}...`);
 
+                            return NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions);
+                        })
+                        .then(function () {
+                            process.stdout.write(' done\n');
+
+                            return new Promise(function (compressSuccess, compressError) {
+                                if (args.compress) {
+                                    process.stdout.write(' Compress...');
+
+                                    let output = fs.createWriteStream(path.resolve(clonePath, '..', `${repo.name}.zip`));
+                                    let archive = archiver('zip', {
+                                        zlib: {
+                                            level: 9
+                                        }
+                                    });
+
+                                    archive.pipe(output);
+                                    archive.directory(clonePath, false);
+                                    archive.finalize();
+
+                                    output.on('close', function () {
+                                        fs.removeSync(clonePath);
+                                        process.stdout.write(' done\n');
+
+                                        compressSuccess();
+                                    });
+
+                                    output.on('error', compressError);
+                                } else {
+                                    compressSuccess();
+                                }
+                            });
+                        })
+                        .then(function () {
                             if (i === repos.length - 1) {
                                 resolve();
                             }
