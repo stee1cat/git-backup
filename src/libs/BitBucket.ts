@@ -15,8 +15,10 @@ export class BitBucket implements IService {
     public readonly NAME = 'bitbucket';
     protected credentials: ICredentials;
 
-    public setCredentials(credentials: ICredentials): void {
+    public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;
+
+        return this;
     }
 
     public fetchUserRepos(user: string): Promise<IRepository[]> {

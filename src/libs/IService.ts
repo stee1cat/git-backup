@@ -7,6 +7,6 @@ import { ICredentials } from './ICredentials';
 
 export interface IService {
     readonly NAME: string;
-    setCredentials(credentials: ICredentials): void;
+    setCredentials(credentials: ICredentials): this;
     fetchUserRepos(user: string): Promise<IRepository[]>;
 }

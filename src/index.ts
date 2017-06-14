@@ -8,11 +8,11 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as NodeGit from 'nodegit';
 import * as moment from 'moment';
-import * as archiver from 'archiver';
 
 import { CLI } from './libs/CLI';
 import { GitHub } from './libs/GitHub';
 import { BitBucket } from './libs/BitBucket';
+import { Util } from './libs/Util';
 import { IService } from './libs/IService';
 
 const cli = new CLI();
@@ -40,8 +40,19 @@ if (args.error) {
 }
 
 let service = createService(args.service);
-service.setCredentials(args.credentials);
-service.fetchUserRepos(args.owner)
+let cloneOptions: NodeGit.CloneOptions = {};
+
+if (args.credentials) {
+    cloneOptions.fetchOpts = {
+        callbacks: {
+            certificateCheck: () => 1,
+            credentials: () => NodeGit.Cred.userpassPlaintextNew(args.credentials.username, args.credentials.password)
+        }
+    };
+}
+
+service.setCredentials(args.credentials)
+    .fetchUserRepos(args.owner)
     .then(function (repos) {
         return new Promise(function (resolve, reject) {
             if (!repos.length) {
@@ -52,52 +63,28 @@ service.fetchUserRepos(args.owner)
                 for (let i = 0; i < repos.length; i++) {
                     let repo = repos[i];
                     let clonePath = path.resolve(args.output, `${service.NAME}_${currentDate}`, repo.owner, repo.name);
-                    let cloneOptions: NodeGit.CloneOptions = {};
-
-                    if (args.credentials) {
-                        cloneOptions.fetchOpts = {
-                            callbacks: {
-                                certificateCheck: () => 1,
-                                credentials: () => NodeGit.Cred.userpassPlaintextNew(args.credentials.username, args.credentials.password)
-                            }
-                        };
-                    }
 
                     if (!fs.existsSync(clonePath)) {
                         fs.mkdirsSync(clonePath);
                     }
 
-                    chain = chain.then(function () {
-                            process.stdout.write(`Clone: ${repo.name}...`);
-
-                            return NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions);
-                        })
+                    chain = chain
+                        .then(() => process.stdout.write(`Clone: ${repo.name}...`))
+                        .then(() => NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions))
+                        .then(() => process.stdout.write(' done\n'))
                         .then(function () {
-                            process.stdout.write(' done\n');
-
                             return new Promise(function (compressSuccess, compressError) {
                                 if (args.compress) {
                                     process.stdout.write(' Compress...');
 
-                                    let output = fs.createWriteStream(path.resolve(clonePath, '..', `${repo.name}.zip`));
-                                    let archive = archiver('zip', {
-                                        zlib: {
-                                            level: 9
-                                        }
-                                    });
+                                    Util.createArchive(path.resolve(clonePath, '..', `${repo.name}.zip`), clonePath)
+                                        .then(function () {
+                                            fs.removeSync(clonePath);
+                                            process.stdout.write(' done\n');
 
-                                    archive.pipe(output);
-                                    archive.directory(clonePath, false);
-                                    archive.finalize();
-
-                                    output.on('close', function () {
-                                        fs.removeSync(clonePath);
-                                        process.stdout.write(' done\n');
-
-                                        compressSuccess();
-                                    });
-
-                                    output.on('error', compressError);
+                                            compressSuccess();
+                                        })
+                                        .catch(compressError);
                                 } else {
                                     compressSuccess();
                                 }
