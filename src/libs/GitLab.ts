@@ -52,7 +52,7 @@ export class GitLab implements IService {
                                     };
                                 });
 
-                                console.log(result);
+                                resolve(result);
                             } catch (e) {
                                 reject(e);
                             }
