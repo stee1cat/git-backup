@@ -6,7 +6,6 @@ import { IRepository } from './IRepository';
 import { ICredentials } from './ICredentials';
 
 export interface IService {
-    readonly NAME: string;
     setCredentials(credentials: ICredentials): this;
     fetchUserRepos(user: string): Promise<IRepository[]>;
 }

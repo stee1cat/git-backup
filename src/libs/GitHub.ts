@@ -4,6 +4,7 @@
 
 import * as request from 'request';
 
+import { ICommandLineArguments } from './CLI';
 import { IService } from './IService';
 import { IRepository } from './IRepository';
 import { ICredentials } from './ICredentials';
@@ -16,9 +17,11 @@ let requestOptions: request.CoreOptions = {
 
 export class GitHub implements IService {
 
-    public readonly NAME = 'github';
+    public static readonly NAME = 'github';
 
     protected credentials: ICredentials;
+
+    constructor(protected options: ICommandLineArguments) {}
 
     public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;

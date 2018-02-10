@@ -4,6 +4,7 @@
 
 import * as bitbucketjs from 'bitbucketjs';
 
+import { ICommandLineArguments } from './CLI';
 import { IService } from './IService';
 import { ICredentials } from './ICredentials';
 import { IRepository } from './IRepository';
@@ -12,8 +13,10 @@ const API_ROOT = 'https://api.bitbucket.org/2.0/';
 
 export class BitBucket implements IService {
 
-    public readonly NAME = 'bitbucket';
+    public static readonly NAME = 'bitbucket';
     protected credentials: ICredentials;
+
+    constructor(protected options: ICommandLineArguments) {}
 
     public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;

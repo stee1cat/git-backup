@@ -4,15 +4,17 @@
 
 import * as path from 'path';
 import * as parseArgs from 'minimist';
+
 import { ICredentials } from './ICredentials';
 
 export interface ICommandLineArguments {
     owner: string;
     output: string;
     credentials?: ICredentials;
-    service: 'github' | 'bitbucket';
+    service: 'github' | 'bitbucket' | 'gitlab';
     error: boolean;
     compress: boolean;
+    host: string;
 }
 
 export interface IParsedArgs {
@@ -35,7 +37,8 @@ export class CLI {
                 'output',
                 'username',
                 'password',
-                'service'
+                'service',
+                'host'
             ],
             boolean: [
                 'compress'
@@ -53,7 +56,8 @@ export class CLI {
             owner: '',
             output: '',
             error: false,
-            compress: false
+            compress: false,
+            host: ''
         };
         let executionPath = path.dirname(args._[1]);
 
@@ -84,6 +88,10 @@ export class CLI {
 
         if (args.compress) {
             result.compress = true;
+        }
+
+        if (args.host) {
+            result.host = args.host;
         }
 
         return result;

@@ -9,9 +9,10 @@ import * as path from 'path';
 import * as NodeGit from 'nodegit';
 import * as moment from 'moment';
 
-import { CLI } from './libs/CLI';
+import { CLI, ICommandLineArguments } from './libs/CLI';
 import { GitHub } from './libs/GitHub';
 import { BitBucket } from './libs/BitBucket';
+import { GitLab } from './libs/GitLab';
 import { Util } from './libs/Util';
 import { IService } from './libs/IService';
 
@@ -19,16 +20,19 @@ const cli = new CLI();
 const args = cli.getArguments();
 const currentDate = moment().format('YYYY-MM-DD_HH-mm');
 
-function createService(service: string): IService {
+function createService(options: ICommandLineArguments): IService {
     let cvs: IService;
 
-    switch (service) {
-        case 'bitbucket':
-            cvs = new BitBucket();
+    switch (options.service) {
+        case BitBucket.NAME:
+            cvs = new BitBucket(options);
             break;
-        case 'github':
+        case GitLab.NAME:
+            cvs = new GitLab(options);
+            break;
+        case GitHub.NAME:
         default:
-            cvs = new GitHub();
+            cvs = new GitHub(options);
     }
 
     return cvs;
@@ -39,7 +43,7 @@ if (args.error) {
     process.exit(1);
 }
 
-let service = createService(args.service);
+let service = createService(args);
 let cloneOptions: NodeGit.CloneOptions = {};
 
 if (args.credentials) {
@@ -62,7 +66,7 @@ service.setCredentials(args.credentials)
 
                 for (let i = 0; i < repos.length; i++) {
                     let repo = repos[i];
-                    let clonePath = path.resolve(args.output, `${service.NAME}_${currentDate}`, repo.owner, repo.name);
+                    let clonePath = path.resolve(args.output, `${(service as any).NAME}_${currentDate}`, repo.owner, repo.name);
 
                     if (!fs.existsSync(clonePath)) {
                         fs.mkdirsSync(clonePath);

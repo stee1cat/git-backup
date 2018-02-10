@@ -10,7 +10,7 @@
 
 ## Запуск
 
-```git-backup <option1=value> <option2=value>```
+```git-backup --<option1=value> --<option2=value>```
 
 ## Опции
 
