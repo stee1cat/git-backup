@@ -10,9 +10,9 @@ import * as NodeGit from 'nodegit';
 import * as moment from 'moment';
 
 import { CLI, ICommandLineArguments } from './libs/CLI';
-import { GitHub } from './libs/GitHub';
-import { BitBucket } from './libs/BitBucket';
-import { GitLab } from './libs/GitLab';
+import { GitHub } from './libs/repositories/GitHub';
+import { BitBucket } from './libs/repositories/BitBucket';
+import { GitLab } from './libs/repositories/GitLab';
 import { Util } from './libs/Util';
 import { IService } from './libs/IService';
 

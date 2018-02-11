@@ -2,46 +2,36 @@
  * Copyright (c) 2018 Gennadiy Khatuntsev <e.steelcat@gmail.com>
  */
 
+import * as deepmerge from 'deepmerge';
 import * as request from 'request';
 
-import { ICommandLineArguments } from './CLI';
-import { ICredentials } from './ICredentials';
-import { IRepository } from './IRepository';
-import { IService } from './IService';
+import { IRepository } from '../IRepository';
+import { IService } from '../IService';
+import { RepositoryManager } from '../RepositoryManager';
 
-export class GitLab implements IService {
+export class GitLab extends RepositoryManager implements IService {
 
     public static readonly NAME = 'gitlab';
 
-    protected credentials: ICredentials;
     protected accessToken: string;
-
-    constructor(protected options: ICommandLineArguments) {}
 
     public get NAME(): string {
         return GitLab.NAME;
-    }
-
-    public setCredentials(credentials: ICredentials): this {
-        this.credentials = credentials;
-
-        return this;
     }
 
     public fetchUserRepos(user: string): Promise<IRepository[]> {
         let { host } = this.options;
 
         return this.getAccessToken()
-            .then(function (accessToken) {
-                let options: request.CoreOptions = {
+            .then(accessToken => {
+                let options: request.CoreOptions = deepmerge(this.requestOptions, {
                     headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                        'Authorization': `Bearer ${accessToken}`
+                        Authorization: `Bearer ${accessToken}`
                     },
                     qs: {
                         per_page: 100
                     }
-                };
+                });
 
                 return new Promise(function (resolve, reject) {
                     request.get(`https://${host}/api/v4/projects`, options, function (error, response) {

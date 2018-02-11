@@ -4,38 +4,21 @@
 
 import * as request from 'request';
 
-import { ICommandLineArguments } from './CLI';
-import { IService } from './IService';
-import { IRepository } from './IRepository';
-import { ICredentials } from './ICredentials';
+import { IService } from '../IService';
+import { IRepository } from '../IRepository';
+import { RepositoryManager } from '../RepositoryManager';
 
-let requestOptions: request.CoreOptions = {
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-    }
-};
-
-export class GitHub implements IService {
+export class GitHub extends RepositoryManager implements IService {
 
     public static readonly NAME = 'github';
-
-    protected credentials: ICredentials;
-
-    constructor(protected options: ICommandLineArguments) {}
 
     public get NAME(): string {
         return GitHub.NAME;
     }
 
-    public setCredentials(credentials: ICredentials): this {
-        this.credentials = credentials;
-
-        return this;
-    }
-
     public fetchUserRepos(user: string): Promise<IRepository[]> {
-        return new Promise(function (resolve, reject) {
-            request.get(`https://api.github.com/users/${user}/repos`, requestOptions, function (error, response) {
+        return new Promise((resolve, reject) => {
+            request.get(`https://api.github.com/users/${user}/repos`, this.requestOptions, function (error, response) {
                 if (!error && response.statusCode === 200) {
                     try {
                         let repos = JSON.parse(response.body);

@@ -4,28 +4,18 @@
 
 import * as bitbucketjs from 'bitbucketjs';
 
-import { ICommandLineArguments } from './CLI';
-import { IService } from './IService';
-import { ICredentials } from './ICredentials';
-import { IRepository } from './IRepository';
+import { IService } from '../IService';
+import { IRepository } from '../IRepository';
+import { RepositoryManager } from '../RepositoryManager';
 
 const API_ROOT = 'https://api.bitbucket.org/2.0/';
 
-export class BitBucket implements IService {
+export class BitBucket extends RepositoryManager implements IService {
 
     public static readonly NAME = 'bitbucket';
-    protected credentials: ICredentials;
-
-    constructor(protected options: ICommandLineArguments) {}
 
     public get NAME(): string {
         return BitBucket.NAME;
-    }
-
-    public setCredentials(credentials: ICredentials): this {
-        this.credentials = credentials;
-
-        return this;
     }
 
     public fetchUserRepos(user: string): Promise<IRepository[]> {
