@@ -23,6 +23,10 @@ export class GitHub implements IService {
 
     constructor(protected options: ICommandLineArguments) {}
 
+    public get NAME(): string {
+        return GitHub.NAME;
+    }
+
     public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;
 

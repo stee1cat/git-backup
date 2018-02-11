@@ -18,6 +18,10 @@ export class BitBucket implements IService {
 
     constructor(protected options: ICommandLineArguments) {}
 
+    public get NAME(): string {
+        return BitBucket.NAME;
+    }
+
     public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;
 

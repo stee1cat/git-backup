@@ -18,6 +18,10 @@ export class GitLab implements IService {
 
     constructor(protected options: ICommandLineArguments) {}
 
+    public get NAME(): string {
+        return GitLab.NAME;
+    }
+
     public setCredentials(credentials: ICredentials): this {
         this.credentials = credentials;
 
