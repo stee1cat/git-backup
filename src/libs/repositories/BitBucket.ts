@@ -18,19 +18,19 @@ export class BitBucket extends RepositoryManager implements IService {
         return BitBucket.NAME;
     }
 
-    public fetchUserRepos(user: string): Promise<IRepository[]> {
+    public async fetchUserRepos(user: string): Promise<IRepository[]> {
         let bitbucket = bitbucketjs(this.credentials);
+        let data = await bitbucket.request.get(`${API_ROOT}repositories/${user}?pagelen=100`);
 
-        return bitbucket.request.get(`${API_ROOT}repositories/${user}?pagelen=100`)
-            .then(data => data.values.map(function (repo) {
-                return {
-                    name: repo.name,
-                    owner: repo.owner.username,
-                    httpsCloneUrl: repo.links.clone.filter(url => url.name === 'https')
-                        .map(url => url.href)
-                        .pop()
-                };
-            }));
+        return data.values.map(function (repo) {
+            return {
+                name: repo.name,
+                owner: repo.owner.username,
+                httpsCloneUrl: repo.links.clone.filter(url => url.name === 'https')
+                    .map(url => url.href)
+                    .pop()
+            };
+        });
     }
 
 }

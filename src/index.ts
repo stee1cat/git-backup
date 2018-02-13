@@ -39,7 +39,7 @@ function createService(options: ICommandLineArguments): IService {
 }
 
 if (args.error) {
-    console.log('input error');
+    Util.stderr('Argument error');
     process.exit(1);
 }
 
@@ -53,62 +53,42 @@ if (args.credentials) {
             credentials: () => NodeGit.Cred.userpassPlaintextNew(args.credentials.username, args.credentials.password)
         }
     };
+
+    service.setCredentials(args.credentials);
 }
 
-service.setCredentials(args.credentials)
-    .fetchUserRepos(args.owner)
-    .then(function (repos) {
-        return new Promise(function (resolve, reject) {
-            if (!repos.length) {
-                resolve();
-            } else {
-                let chain = Promise.resolve();
+async function bootstrap() {
+    let repos = await service.fetchUserRepos(args.owner);
 
-                for (let i = 0; i < repos.length; i++) {
-                    let repo = repos[i];
-                    let clonePath = path.resolve(args.output, `${(service as any).NAME}_${currentDate}`, repo.owner, repo.name);
+    try {
+        if (repos.length) {
+            for (let repo of repos) {
+                let clonePath = path.resolve(args.output, `${(service as any).NAME}_${currentDate}`, repo.owner, repo.name);
 
-                    if (!fs.existsSync(clonePath)) {
-                        fs.mkdirsSync(clonePath);
-                    }
+                if (!fs.existsSync(clonePath)) {
+                    fs.mkdirsSync(clonePath);
+                }
 
-                    chain = chain
-                        .then(() => process.stdout.write(`Clone: ${repo.name}...`))
-                        .then(() => NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions))
-                        .then(() => process.stdout.write(' done\n'))
-                        .then(function () {
-                            return new Promise(function (compressSuccess, compressError) {
-                                if (args.compress) {
-                                    process.stdout.write(' Compress...');
+                Util.stdout(`Clone: ${repo.name}...`);
+                await NodeGit.Clone.clone(repo.httpsCloneUrl, clonePath, cloneOptions);
+                Util.stdout(' done\n');
 
-                                    Util.createArchive(path.resolve(clonePath, '..', `${repo.name}.zip`), clonePath)
-                                        .then(function () {
-                                            fs.removeSync(clonePath);
-                                            process.stdout.write(' done\n');
+                if (args.compress) {
+                    Util.stdout(' Compress...');
 
-                                            compressSuccess();
-                                        })
-                                        .catch(compressError);
-                                } else {
-                                    compressSuccess();
-                                }
-                            });
-                        })
-                        .then(function () {
-                            if (i === repos.length - 1) {
-                                resolve();
-                            }
-                        })
-                        .catch(reject);
+                    await Util.createArchive(path.resolve(clonePath, '..', `${repo.name}.zip`), clonePath);
+                    fs.removeSync(clonePath);
+                    Util.stdout(' done\n');
                 }
             }
-        });
-    })
-    .then(function () {
-        console.log('Backup completed');
+        }
+
+        Util.stdout('Backup completed');
         process.exit(0);
-    })
-    .catch(function (error) {
-        console.error(error);
+    } catch (error) {
+        Util.stderr(error);
         process.exit(-1);
-    });
+    }
+}
+
+bootstrap();

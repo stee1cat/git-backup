@@ -63,8 +63,7 @@ export class GitLab extends RepositoryManager implements IService {
         let params = {
             form: {
                 grant_type: 'password',
-                username: this.credentials.username,
-                password: this.credentials.password
+                ...this.credentials
             }
         };
 

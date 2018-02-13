@@ -25,4 +25,12 @@ export class Util {
         });
     }
 
+    public static stdout(message: string) {
+        process.stdout.write(message);
+    }
+
+    public static stderr(message: string) {
+        process.stderr.write(message);
+    }
+
 }
