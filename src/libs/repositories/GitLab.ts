@@ -33,7 +33,7 @@ export class GitLab extends RepositoryManager implements IService {
                     }
                 });
 
-                return new Promise(function (resolve, reject) {
+                return new Promise<IRepository[]>(function (resolve, reject) {
                     request.get(`https://${host}/api/v4/projects`, options, function (error, response) {
                         if (!error && response.statusCode === 200) {
                             try {
