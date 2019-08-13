@@ -7,7 +7,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as NodeGit from 'nodegit';
-import * as moment from 'moment';
 
 import { CLI, ICommandLineArguments } from './libs/CLI';
 import { GitHub } from './libs/repositories/GitHub';
@@ -18,7 +17,7 @@ import { IService } from './libs/IService';
 
 const cli = new CLI();
 const args = cli.getArguments();
-const currentDate = moment().format('YYYY-MM-DD_HH-mm');
+const currentDate = Util.getCurrentDate();
 
 function createService(options: ICommandLineArguments): IService {
     let cvs: IService;

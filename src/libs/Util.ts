@@ -33,4 +33,10 @@ export class Util {
         process.stderr.write(message);
     }
 
+    public static getCurrentDate(): string {
+        const date = new Date();
+
+        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${date.getHours()}-${date.getMinutes()}`;
+    }
+
 }
