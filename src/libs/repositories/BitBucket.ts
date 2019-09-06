@@ -8,8 +8,6 @@ import { IService } from '../IService';
 import { IRepository } from '../IRepository';
 import { RepositoryManager } from '../RepositoryManager';
 
-const API_ROOT = 'https://api.bitbucket.org/2.0/';
-
 export class BitBucket extends RepositoryManager implements IService {
 
     public static readonly NAME = 'bitbucket';
@@ -20,17 +18,30 @@ export class BitBucket extends RepositoryManager implements IService {
 
     public async fetchUserRepos(user: string): Promise<IRepository[]> {
         let bitbucket = bitbucketjs(this.credentials);
-        let data = await bitbucket.request.get(`${API_ROOT}repositories/${user}?pagelen=100`);
+        let data = await bitbucket.request.get(this.getRepositoriesUrl());
 
         return data.values.map(function (repo) {
             return {
                 name: repo.name,
-                owner: repo.owner.username,
-                httpsCloneUrl: repo.links.clone.filter(url => url.name === 'https')
+                owner: user,
+                httpsCloneUrl: repo.links.clone.filter(url => ['https', 'http'].indexOf(url.name) > -1)
                     .map(url => url.href)
-                    .pop()
+                    .pop(),
             };
         });
+    }
+
+    private getRepositoriesUrl(): string {
+        const {
+            host,
+            owner,
+        } = this.options;
+
+        if (host && owner) {
+            return `https://${host}/stash/rest/api/latest/projects/${owner}/repos?start=0&limit=100`;
+        }
+
+        return `https://api.bitbucket.org/2.0/repositories/${owner}?pagelen=100`;
     }
 
 }

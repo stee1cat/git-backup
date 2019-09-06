@@ -34,9 +34,7 @@ export class Util {
     }
 
     public static getCurrentDate(): string {
-        const date = new Date();
-
-        return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}_${date.getHours()}-${date.getMinutes()}`;
+        return Math.ceil(Date.now() / 1000).toString();
     }
 
 }

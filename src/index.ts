@@ -85,7 +85,7 @@ async function bootstrap() {
         Util.stdout('Backup completed');
         process.exit(0);
     } catch (error) {
-        Util.stderr(error);
+        Util.stderr(error.message);
         process.exit(-1);
     }
 }
