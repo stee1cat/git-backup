@@ -3,6 +3,10 @@
   "version": "0.3.0",
   "description": "",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stee1cat/git-backup.git"
+  },
   "scripts": {
     "prepublish": "npm run build",
     "build": "gulp",
