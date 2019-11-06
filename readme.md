@@ -1,31 +1,31 @@
 # git-backup
 
-`git-backup` - CLI-утилита для выполнения резервного копиравания GIT-репозитариев.
+`git-backup` - CLI utility for backing up git repositories.
 
-На данный момент поддерживается бекап всех репозитариев пользователя с [GitHub](https://github.com/), [BitBucket](https://bitbucket.com/) и GitLab. Если требуется аутентификация, то авторизация доступна по паре логин/пароль.
+Currently all user repositories on [GitHub](https://github.com/), [BitBucket](https://bitbucket.com/) and GitLab are supported. If authentication is required, authorization is available via login/password pair.
 
-## Установка
+## Set up
 
 ```bash
 npm install --global git-backup
 ```
 
-## Запуск
+## Run
 
 ```bash
 git-backup --<option1=value> --<option2=value>
 ```
 
-## Опции
+## Options
 
-* `owner` - владелец репозитариев которые необходимо скопировать.
+* `owner` - the owner of the repositories that need to be backed up.
 
-* `output` - директория сохранения.
+* `output` - the output directory.
 
-* `service`- может принимать значения: `github`, `bitbucket` или `gitlab`.
+* `service` - can take values: `github`, `bitbucket` or `gitlab`.
 
-* `username` - логин для авторизации.
+* `username` - login for authorization.
 
-* `password` - пароль для авторизации.
+* `password` - password for authorization.
 
-* `compress` - флаг архивации.
+* `compress` - archiving flag.

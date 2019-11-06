@@ -33,4 +33,8 @@ export class Util {
         process.stderr.write(message);
     }
 
+    public static getCurrentDate(): string {
+        return Math.ceil(Date.now() / 1000).toString();
+    }
+
 }
