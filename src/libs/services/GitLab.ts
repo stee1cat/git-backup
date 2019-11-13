@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2018 Gennadiy Khatuntsev <e.steelcat@gmail.com>
- */
-
 import * as deepmerge from 'deepmerge';
 import * as request from 'request';
 
@@ -10,7 +6,6 @@ import { IService } from '../IService';
 import { RepositoryManager } from '../RepositoryManager';
 
 export class GitLab extends RepositoryManager implements IService {
-
     public static readonly NAME = 'gitlab';
 
     protected accessToken: string;
@@ -85,5 +80,4 @@ export class GitLab extends RepositoryManager implements IService {
             });
         });
     }
-
 }

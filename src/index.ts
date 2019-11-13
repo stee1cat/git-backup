@@ -1,17 +1,13 @@
 #!/usr/bin/env node
 
-/**
- * Copyright (c) 2017 Gennadiy Khatuntsev <e.steelcat@gmail.com>
- */
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as NodeGit from 'nodegit';
 
 import { CLI, ICommandLineArguments } from './libs/CLI';
-import { GitHub } from './libs/repositories/GitHub';
-import { BitBucket } from './libs/repositories/BitBucket';
-import { GitLab } from './libs/repositories/GitLab';
+import { GitHub } from './libs/services/GitHub';
+import { BitBucket } from './libs/services/BitBucket';
+import { GitLab } from './libs/services/GitLab';
 import { Util } from './libs/Util';
 import { IService } from './libs/IService';
 
@@ -35,11 +31,6 @@ function createService(options: ICommandLineArguments): IService {
     }
 
     return cvs;
-}
-
-if (args.error) {
-    Util.stderr('Argument error');
-    process.exit(1);
 }
 
 let service = createService(args);
