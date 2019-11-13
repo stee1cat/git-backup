@@ -1,9 +1,10 @@
 {
   "name": "git-backup",
-  "version": "0.3.1",
-  "description": "",
+  "version": "0.3.2",
+  "description": "CLI utility for backing up git repositories",
   "main": "dist/index.js",
   "scripts": {
+    "prebuild": "rimraf ./dist",
     "prepublish": "npm run build",
     "build": "gulp",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -24,19 +25,20 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "@types/node": "^7.10.5",
+    "@types/node": "^12.12.7",
     "@types/request": "^2.48.2",
     "gulp": "^4.0.2",
     "gulp-typescript": "^5.0.1",
+    "rimraf": "^3.0.0",
     "tslint": "^5.16.0",
-    "typescript": "^2.9.2"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "archiver": "^3.1.1",
     "bitbucketjs": "^1.0.2",
+    "commander": "^4.0.1",
     "deepmerge": "^2.2.1",
     "fs-extra": "^8.1.0",
-    "minimist": "^1.2.0",
     "nodegit": "^0.25.1",
     "request": "^2.88.0"
   }

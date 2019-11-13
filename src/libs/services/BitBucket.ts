@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2017 Gennadiy Khatuntsev <e.steelcat@gmail.com>
- */
-
 import * as bitbucketjs from 'bitbucketjs';
 
 import { IService } from '../IService';
@@ -9,7 +5,6 @@ import { IRepository } from '../IRepository';
 import { RepositoryManager } from '../RepositoryManager';
 
 export class BitBucket extends RepositoryManager implements IService {
-
     public static readonly NAME = 'bitbucket';
 
     public get NAME(): string {
@@ -43,5 +38,4 @@ export class BitBucket extends RepositoryManager implements IService {
 
         return `https://api.bitbucket.org/2.0/repositories/${owner}?pagelen=100`;
     }
-
 }

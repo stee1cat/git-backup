@@ -1,100 +1,62 @@
-/**
- * Copyright (c) 2017 Gennadiy Khatuntsev <e.steelcat@gmail.com>
- */
-
 import * as path from 'path';
-import * as parseArgs from 'minimist';
+import * as program from 'commander';
 
 import { ICredentials } from './ICredentials';
+import { GitHub } from './services/GitHub';
+import { BitBucket } from './services/BitBucket';
+import { GitLab } from './services/GitLab';
+import * as packageInfo from '../../package.json';
+
+program.version(packageInfo.version, '--version')
+    .name('git-backup')
+    .requiredOption('--service', `can take values: ${GitHub.NAME}, ${BitBucket.NAME} or ${GitLab.NAME}`, (value: string) => {
+        const service = `${value}`.toLowerCase();
+        const services = [
+            BitBucket.NAME,
+            GitHub.NAME,
+            GitLab.NAME,
+        ];
+
+        if (services.indexOf(service) > -1) {
+            return service;
+        }
+
+        return GitHub.NAME;
+    }, GitHub.NAME)
+    .requiredOption('--owner  <string>', 'the owner of the repositories that need to be backed up')
+    .option('--output <string>', 'the output directory', (value: string = '') => {
+        return path.resolve(process.cwd(), value);
+    }, process.cwd())
+    .option('--username <string>', 'login for authorization', '')
+    .option('--password <string>', 'password for authorization', '')
+    .option('--host <string>', 'optional host for service', '')
+    .option('--compress', 'archiving flag', false);
+
+program.parse(process.argv);
 
 export interface ICommandLineArguments {
     owner: string;
     output: string;
     credentials?: ICredentials;
     service: 'github' | 'bitbucket' | 'gitlab';
-    error: boolean;
     compress: boolean;
     host: string;
 }
 
-export interface IParsedArgs {
-    _: string[];
-    [key: string]: any;
-}
-
 export class CLI {
-
-    protected args: string[];
-
-    constructor() {
-        this.args = process.argv;
-    }
-
     public getArguments(): ICommandLineArguments {
-        let options = {
-            string: [
-                'owner',
-                'output',
-                'username',
-                'password',
-                'service',
-                'host'
-            ],
-            boolean: [
-                'compress'
-            ]
+        const options = program.opts();
+
+        return {
+            compress: options.compress,
+            host: options.host,
+            output: options.output,
+            owner: options.owner,
+            service: options.service,
+            credentials: {
+                username: options.username,
+                password: options.password,
+            },
         };
-
-        let args: IParsedArgs = parseArgs(this.args, options);
-
-        return this.prepareArguments(args);
     }
-
-    protected prepareArguments(args: IParsedArgs): ICommandLineArguments {
-        let result: ICommandLineArguments = {
-            service: 'github',
-            owner: '',
-            output: '',
-            error: false,
-            compress: false,
-            host: ''
-        };
-        let executionPath = path.dirname(args._[1]);
-
-        if (!args.owner) {
-            result.error = true;
-        } else  {
-            result.owner = args.owner;
-        }
-
-        if (!args.service) {
-            result.error = true;
-        } else  {
-            result.service = args.service.toLowerCase();
-        }
-
-        if (args.output) {
-            result.output = path.resolve(executionPath, args.output);
-        } else {
-            result.output = executionPath;
-        }
-
-        if (args.username && args.password) {
-            result.credentials = {
-                username: args.username,
-                password: args.password
-            };
-        }
-
-        if (args.compress) {
-            result.compress = true;
-        }
-
-        if (args.host) {
-            result.host = args.host;
-        }
-
-        return result;
-    }
-
 }

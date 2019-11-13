@@ -1,14 +1,9 @@
-/**
- * Copyright (c) 2018 Gennadiy Khatuntsev <e.steelcat@gmail.com>
- */
-
 import * as request from 'request';
 
 import { ICommandLineArguments } from './CLI';
 import { ICredentials } from './ICredentials';
 
 export abstract class RepositoryManager {
-
     protected credentials: ICredentials;
     protected requestOptions: request.CoreOptions = {
         headers: {
@@ -23,5 +18,4 @@ export abstract class RepositoryManager {
 
         return this;
     }
-
 }

@@ -4,25 +4,23 @@
 
 На данный момент поддерживается бекап всех репозитариев пользователя с [GitHub](https://github.com/), [BitBucket](https://bitbucket.com/) и GitLab. Если требуется аутентификация, то авторизация доступна по паре логин/пароль.
 
-## Установка
-
-```bash
-npm install --global git-backup
-```
-
 ## Запуск
 
 ```bash
-git-backup --<option1=value> --<option2=value>
+npx git-backup --<option1=value> --<option2=value>
 ```
 
 ## Опции
+
+* `help` - вывод справки.
 
 * `owner` - владелец репозитариев которые необходимо скопировать.
 
 * `output` - директория сохранения.
 
 * `service`- может принимать значения: `github`, `bitbucket` или `gitlab`.
+
+* `host` - опциональный адрес хоста, используется совместно с `service`.
 
 * `username` - логин для авторизации.
 

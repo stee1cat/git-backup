@@ -1,5 +1,7 @@
+.idea
 src
 gulpfile.js
 tsconfig.json
 tslint.json
 .editorconfig
+run.cmd
