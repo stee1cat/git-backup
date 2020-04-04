@@ -9,7 +9,7 @@ import * as packageInfo from '../../package.json';
 
 program.version(packageInfo.version, '--version')
     .name('git-backup')
-    .requiredOption('--service', `can take values: ${GitHub.NAME}, ${BitBucket.NAME} or ${GitLab.NAME}`, (value: string) => {
+    .requiredOption('--service <string>', `can take values: ${GitHub.NAME}, ${BitBucket.NAME} or ${GitLab.NAME}`, (value: string) => {
         const service = `${value}`.toLowerCase();
         const services = [
             BitBucket.NAME,
@@ -23,7 +23,7 @@ program.version(packageInfo.version, '--version')
 
         return GitHub.NAME;
     }, GitHub.NAME)
-    .requiredOption('--owner  <string>', 'the owner of the repositories that need to be backed up')
+    .requiredOption('--owner <string>', 'the owner of the repositories that need to be backed up')
     .option('--output <string>', 'the output directory', (value: string = '') => {
         return path.resolve(process.cwd(), value);
     }, process.cwd())
